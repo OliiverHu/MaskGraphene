@@ -1,7 +1,6 @@
 <h1> MaskGraphene: Advancing clustering, joint embedding, and batch correction for spatial transcriptomics using graph-based self-supervised learning </h1>
 
-Implementation for Recomb 2024 paper:  [GraphMAE2: A Decoding-Enhanced Masked Self-Supervised
-Graph Learner](https://arxiv.org/abs/2304.04779).
+Implementation for Recomb 2024 paper:  [MaskGraphene]().
 <img src="/figs/ppl.png">
 
 
