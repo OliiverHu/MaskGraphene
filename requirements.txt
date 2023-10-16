@@ -28,7 +28,6 @@ frozenlist==1.4.0
 fsspec==2023.9.1
 gitdb==4.0.10
 GitPython==3.1.36
-GraphST==1.1.1
 h5py==3.9.0
 hnswlib==0.7.0
 idna==3.4
