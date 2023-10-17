@@ -43,17 +43,16 @@ For quick start, you could run the scripts:
 **DLPFC 151507/151508**
 
 ```bash
-python ./maskgraphene_main.py --max_epoch 1500 --max_epoch_triplet 700 --logging False --section_ids "151507,151508" --num_class 7 --load_model False --num_hidden "512,32" --alpha_l 2 --lam 1 --loss_fn "sce" 
+python ./maskgraphene_main.py --max_epoch 1500 --max_epoch_triplet 500 --logging False --section_ids "151507,151508" --num_class 7 --load_model False --num_hidden "512,32" --alpha_l 2 --lam 1 --loss_fn "sce" 
                               --mask_rate 0.25 --in_drop 0 --attn_drop 0 --remask_rate 0.25
                               --exp_fig_dir "./" --h5ad_save_dir "./" --st_data_dir "./benchmarking_data/DLPFC12"
-                              --seeds 2023 --num_remasking 1 --hvgs 6000 --dataset DLPFC --consecutive_prior 1
+                              --seeds 2023 --num_remasking 1 --hvgs 7000 --dataset DLPFC --consecutive_prior 1
 ```
 
 Supported ST datasets:
 
-<!-- * mini batch node classification:  `ogbn-arxiv`, `ogbn-products`, `mag-scholar-f`, `ogbn-papers100M` -->
-* 10x Visium: [`DLPFC`](), [`Mouse Sagittal Brain`]()
-* Others: [`mouse Hypothalamus`](), [`Embryo`]()
+* 10x Visium: [`DLPFC`](http://spatial.libd.org/spatialLIBD/), [`Mouse Sagittal Brain`](https://www.10xgenomics.com/resources/datasets/mouse-brain-serial-section-2-sagittal-anterior-1-standard/)
+* Others: [`mouse Hypothalamus`](https://datadryad.org/stash/dataset/doi:10.5061/dryad.8t8s248), [`Embryo`](https://db.cngb.org/stomics/mosta/resource/)
 
 
 <h2>Acknowledgement </h2>
