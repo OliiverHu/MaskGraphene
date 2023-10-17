@@ -1,0 +1,201 @@
+wandb_version: 1
+
+seeds:
+  desc: null
+  value:
+  - 0
+  - 5
+  - 42
+  - 114514
+  - 2023
+dataset:
+  desc: null
+  value: DLPFC
+exp_fig_dir:
+  desc: null
+  value: /home/yunfei/spatial_dl_integration/GraphMAE2/MG_exps_1014_1
+h5ad_save_dir:
+  desc: null
+  value: /home/yunfei/spatial_dl_integration/GraphMAE2/st_dataset
+st_data_dir:
+  desc: null
+  value: /home/yunfei/spatial_benchmarking/benchmarking_data/DLPFC12
+consecutive_prior:
+  desc: null
+  value: 1
+section_ids:
+  desc: null
+  value: 151508,151509
+num_class:
+  desc: null
+  value: 7
+hvgs:
+  desc: null
+  value: 6500
+device:
+  desc: null
+  value: 3
+max_epoch:
+  desc: null
+  value: 1500
+max_epoch_triplet:
+  desc: null
+  value: 700
+warmup_steps:
+  desc: null
+  value: -1
+num_heads:
+  desc: null
+  value: 1
+num_out_heads:
+  desc: null
+  value: 1
+num_layers:
+  desc: null
+  value: 2
+num_dec_layers:
+  desc: null
+  value: 2
+num_remasking:
+  desc: null
+  value: 1
+num_hidden:
+  desc: null
+  value: 512,32
+residual:
+  desc: null
+  value: false
+in_drop:
+  desc: null
+  value: 0.0
+attn_drop:
+  desc: null
+  value: 0.0
+norm:
+  desc: null
+  value: null
+lr:
+  desc: null
+  value: 0.001
+weight_decay:
+  desc: null
+  value: 0
+negative_slope:
+  desc: null
+  value: 0.2
+activation:
+  desc: null
+  value: elu
+mask_rate:
+  desc: null
+  value: 0.25
+remask_rate:
+  desc: null
+  value: 0.25
+remask_method:
+  desc: null
+  value: random
+mask_type:
+  desc: null
+  value: mask
+mask_method:
+  desc: null
+  value: random
+drop_edge_rate:
+  desc: null
+  value: 0.0
+encoder:
+  desc: null
+  value: gat
+decoder:
+  desc: null
+  value: gat
+loss_fn:
+  desc: null
+  value: sce
+alpha_l:
+  desc: null
+  value: 2.0
+optimizer:
+  desc: null
+  value: adam
+linear_prob:
+  desc: null
+  value: false
+no_pretrain:
+  desc: null
+  value: false
+checkpoint_path:
+  desc: null
+  value: null
+use_cfg:
+  desc: null
+  value: false
+logging:
+  desc: null
+  value: 'False'
+scheduler:
+  desc: null
+  value: false
+batch_size:
+  desc: null
+  value: 512
+sampling_method:
+  desc: null
+  value: saint
+label_rate:
+  desc: null
+  value: 1.0
+data_dir:
+  desc: null
+  value: /home/yunfei/spatial_benchmarking/benchmarking_data
+lam:
+  desc: null
+  value: 1.0
+full_graph_forward:
+  desc: null
+  value: false
+delayed_ema_epoch:
+  desc: null
+  value: 0
+replace_rate:
+  desc: null
+  value: 0.0
+momentum:
+  desc: null
+  value: 0.996
+load_model:
+  desc: null
+  value: 'False'
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.18
+    cli_version: 0.15.10
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: true
+    start_time: 1697561100.875954
+    t:
+      1:
+      - 1
+      - 5
+      - 51
+      - 53
+      - 55
+      - 76
+      2:
+      - 1
+      - 5
+      - 51
+      - 53
+      - 55
+      - 76
+      3:
+      - 16
+      - 23
+      4: 3.9.18
+      5: 0.15.10
+      8:
+      - 2
+      - 5

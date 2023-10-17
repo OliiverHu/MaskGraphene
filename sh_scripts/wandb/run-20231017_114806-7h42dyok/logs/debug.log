@@ -1,0 +1,28 @@
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Current SDK version is 0.15.10
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Configure stats pid to 8884
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Loading settings from /home/yunfei/.config/wandb/settings
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Loading settings from /home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/wandb/settings
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'maskgraphene_main.py', 'program': '/home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/../maskgraphene_main.py'}
+2023-10-17 11:48:06,436 INFO    MainThread:8884 [wandb_init.py:_log_setup():524] Logging user logs to /home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/wandb/run-20231017_114806-7h42dyok/logs/debug.log
+2023-10-17 11:48:06,437 INFO    MainThread:8884 [wandb_init.py:_log_setup():525] Logging internal logs to /home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/wandb/run-20231017_114806-7h42dyok/logs/debug-internal.log
+2023-10-17 11:48:06,437 INFO    MainThread:8884 [wandb_init.py:init():564] calling init triggers
+2023-10-17 11:48:06,437 INFO    MainThread:8884 [wandb_init.py:init():571] wandb.init called with sweep_config: {}
+config: {'seeds': [0, 5, 42, 114514, 2023], 'dataset': 'DLPFC', 'exp_fig_dir': '/home/yunfei/spatial_dl_integration/GraphMAE2/MG_exps_1014_1', 'h5ad_save_dir': '/home/yunfei/spatial_dl_integration/GraphMAE2/st_dataset', 'st_data_dir': '/home/yunfei/spatial_benchmarking/benchmarking_data/DLPFC12', 'consecutive_prior': 1, 'section_ids': '151507,151508', 'num_class': 7, 'hvgs': 6500, 'device': 3, 'max_epoch': 1500, 'max_epoch_triplet': 700, 'warmup_steps': -1, 'num_heads': 1, 'num_out_heads': 1, 'num_layers': 2, 'num_dec_layers': 2, 'num_remasking': 1, 'num_hidden': '512,32', 'residual': False, 'in_drop': 0.0, 'attn_drop': 0.0, 'norm': None, 'lr': 0.001, 'weight_decay': 0, 'negative_slope': 0.2, 'activation': 'elu', 'mask_rate': 0.25, 'remask_rate': 0.25, 'remask_method': 'random', 'mask_type': 'mask', 'mask_method': 'random', 'drop_edge_rate': 0.0, 'encoder': 'gat', 'decoder': 'gat', 'loss_fn': 'sce', 'alpha_l': 2.0, 'optimizer': 'adam', 'linear_prob': False, 'no_pretrain': False, 'checkpoint_path': None, 'use_cfg': False, 'logging': 'False', 'scheduler': False, 'batch_size': 512, 'sampling_method': 'saint', 'label_rate': 1.0, 'data_dir': '/home/yunfei/spatial_benchmarking/benchmarking_data', 'lam': 1.0, 'full_graph_forward': False, 'delayed_ema_epoch': 0, 'replace_rate': 0.0, 'momentum': 0.996, 'load_model': 'False'}
+2023-10-17 11:48:06,437 INFO    MainThread:8884 [wandb_init.py:init():614] starting backend
+2023-10-17 11:48:06,437 INFO    MainThread:8884 [wandb_init.py:init():618] setting up manager
+2023-10-17 11:48:06,440 INFO    MainThread:8884 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2023-10-17 11:48:06,442 INFO    MainThread:8884 [wandb_init.py:init():624] backend started and connected
+2023-10-17 11:48:06,451 INFO    MainThread:8884 [wandb_init.py:init():715] updated telemetry
+2023-10-17 11:48:06,515 INFO    MainThread:8884 [wandb_init.py:init():748] communicating run to backend with 90.0 second timeout
+2023-10-17 11:48:06,886 INFO    MainThread:8884 [wandb_run.py:_on_init():2220] communicating current version
+2023-10-17 11:48:07,015 INFO    MainThread:8884 [wandb_run.py:_on_init():2229] got version response upgrade_message: "wandb version 0.15.12 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2023-10-17 11:48:07,015 INFO    MainThread:8884 [wandb_init.py:init():799] starting run threads in backend
+2023-10-17 11:48:14,375 INFO    MainThread:8884 [wandb_run.py:_console_start():2199] atexit reg
+2023-10-17 11:48:14,375 INFO    MainThread:8884 [wandb_run.py:_redirect():2054] redirect: wrap_raw
+2023-10-17 11:48:14,375 INFO    MainThread:8884 [wandb_run.py:_redirect():2119] Wrapping output streams.
+2023-10-17 11:48:14,375 INFO    MainThread:8884 [wandb_run.py:_redirect():2144] Redirects installed.
+2023-10-17 11:48:14,376 INFO    MainThread:8884 [wandb_init.py:init():840] run started, returning control to user process
+2023-10-17 11:48:29,710 WARNING MsgRouterThr:8884 [router.py:message_loop():77] message_loop has been closed

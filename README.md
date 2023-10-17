@@ -21,6 +21,20 @@ Implementation for Recomb 2024 paper:  [MaskGraphene]().
 * wandb==0.15.10
 * pyyaml == 5.4.1
 
+<h2>Installation with conda</h2>
+
+```bash
+conda create -n MaskGraphene python=3.9 
+
+pip install -r requirements.txt
+```
+
+For DGL package, please refer to [link](https://www.dgl.ai/pages/start.html)
+
+```bash
+pip install  dgl -f https://data.dgl.ai/wheels/cu117/repo.html
+pip install  dglgo -f https://data.dgl.ai/wheels-test/repo.html
+```
 
 <h2>Quick Start </h2>
 

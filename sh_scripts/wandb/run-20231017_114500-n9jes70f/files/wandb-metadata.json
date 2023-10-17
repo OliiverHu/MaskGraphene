@@ -1,0 +1,289 @@
+{
+    "os": "Linux-5.11.0-27-generic-x86_64-with-glibc2.31",
+    "python": "3.9.18",
+    "heartbeatAt": "2023-10-17T16:45:01.599179",
+    "startedAt": "2023-10-17T16:45:00.865852",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--max_epoch",
+        "1500",
+        "--max_epoch_triplet",
+        "700",
+        "--logging",
+        "False",
+        "--section_ids",
+        "151508,151509",
+        "--num_class",
+        "7",
+        "--load_model",
+        "False",
+        "--num_hidden",
+        "512,32",
+        "--alpha_l",
+        "2",
+        "--lam",
+        "1",
+        "--loss_fn",
+        "sce",
+        "--mask_rate",
+        "0.25",
+        "--in_drop",
+        "0",
+        "--attn_drop",
+        "0",
+        "--remask_rate",
+        "0.25",
+        "--exp_fig_dir",
+        "/home/yunfei/spatial_dl_integration/GraphMAE2/MG_exps_1014_1",
+        "--h5ad_save_dir",
+        "/home/yunfei/spatial_dl_integration/GraphMAE2/st_dataset",
+        "--st_data_dir",
+        "/home/yunfei/spatial_benchmarking/benchmarking_data/DLPFC12",
+        "--seeds",
+        "0",
+        "5",
+        "42",
+        "114514",
+        "2023",
+        "--num_remasking",
+        "1",
+        "--hvgs",
+        "6500",
+        "--dataset",
+        "DLPFC",
+        "--consecutive_prior",
+        "1"
+    ],
+    "state": "running",
+    "program": "/home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/../maskgraphene_main.py",
+    "codePathLocal": null,
+    "codePath": "maskgraphene_main.py",
+    "git": {
+        "remote": "https://github.com/OliiverHu/MaskGraphene.git",
+        "commit": "1b0bf459aeafb6ba14bae97cfb4219e497a63fc3"
+    },
+    "email": "yunfei.hu@vanderbilt.edu",
+    "root": "/home/yunfei/spatial_dl_integration/MaskGraphene",
+    "host": "cclab-lambda",
+    "username": "yunfei",
+    "executable": "/home/yunfei/anaconda3/envs/MG/bin/python",
+    "cpu_count": 18,
+    "cpu_count_logical": 36,
+    "cpu_freq": {
+        "current": 2266.6839444444445,
+        "min": 1000.0,
+        "max": 4300.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 1429.879,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        },
+        {
+            "current": 2300.0,
+            "min": 1000.0,
+            "max": 4300.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 1832.2814636230469,
+            "used": 1392.9112815856934
+        }
+    },
+    "gpu": "Quadro RTX 8000",
+    "gpu_count": 4,
+    "gpu_devices": [
+        {
+            "name": "Quadro RTX 8000",
+            "memory_total": 50962169856
+        },
+        {
+            "name": "Quadro RTX 8000",
+            "memory_total": 50962169856
+        },
+        {
+            "name": "Quadro RTX 8000",
+            "memory_total": 50962169856
+        },
+        {
+            "name": "Quadro RTX 8000",
+            "memory_total": 50953781248
+        }
+    ],
+    "memory": {
+        "total": 251.3948211669922
+    }
+}

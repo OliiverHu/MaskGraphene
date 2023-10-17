@@ -1,0 +1,25 @@
+/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/anndata/_core/anndata.py:1840: UserWarning: Variable names are not unique. To make them unique, call `.var_names_make_unique`.
+  utils.warn_names_duplicates("var")
+/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/anndata/_core/anndata.py:1840: UserWarning: Variable names are not unique. To make them unique, call `.var_names_make_unique`.
+  utils.warn_names_duplicates("var")
+Traceback (most recent call last):
+  File "/home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/../maskgraphene_main.py", line 581, in <module>
+    a_ari = main(args)
+  File "/home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/../maskgraphene_main.py", line 443, in main
+    graph, num_features, ad_concat = localOT_loader(section_ids=section_ids, hvgs=args.hvgs, st_data_dir=st_data_dir, dataname=dataset_name)
+  File "/home/yunfei/spatial_dl_integration/MaskGraphene/sh_scripts/../maskgraphene_main.py", line 174, in localOT_loader
+    Cal_Spatial_Net(ad_, rad_cutoff=150) # the spatial network are saved in adata.uns[‘adj’]
+  File "/home/yunfei/spatial_dl_integration/MaskGraphene/datasets/data_proc.py", line 77, in Cal_Spatial_Net
+    KNN_df = pd.concat(KNN_list)
+  File "/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/pandas/util/_decorators.py", line 331, in wrapper
+    return func(*args, **kwargs)
+  File "/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/pandas/core/reshape/concat.py", line 381, in concat
+    return op.get_result()
+  File "/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/pandas/core/reshape/concat.py", line 616, in get_result
+    new_data = concatenate_managers(
+  File "/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/pandas/core/internals/concat.py", line 197, in concatenate_managers
+    mgrs_indexers = _maybe_reindex_columns_na_proxy(axes, mgrs_indexers)
+  File "/home/yunfei/anaconda3/envs/MG/lib/python3.9/site-packages/pandas/core/internals/concat.py", line 273, in _maybe_reindex_columns_na_proxy
+    new_mgrs_indexers.append((mgr, indexers))
+KeyboardInterrupt
+------Calculating spatial graph...
