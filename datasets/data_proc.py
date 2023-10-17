@@ -112,44 +112,6 @@ def Cal_Spatial_Net(adata, rad_cutoff=None, k_cutoff=None, max_neigh=50, model='
     adata.uns['adj'] = G
 
 
-# def load_small_dataset(dataset_name):
-#     assert dataset_name in GRAPH_DICT, f"Unknow dataset: {dataset_name}."
-#     if dataset_name.startswith("ogbn"):
-#         dataset = GRAPH_DICT[dataset_name](dataset_name)
-#     else:
-#         dataset = GRAPH_DICT[dataset_name]()
-
-#     if dataset_name == "ogbn-arxiv":
-#         graph, labels = dataset[0]
-#         num_nodes = graph.num_nodes()
-
-#         split_idx = dataset.get_idx_split()
-#         train_idx, val_idx, test_idx = split_idx["train"], split_idx["valid"], split_idx["test"]
-#         graph = preprocess(graph)
-
-#         if not torch.is_tensor(train_idx):
-#             train_idx = torch.as_tensor(train_idx)
-#             val_idx = torch.as_tensor(val_idx)
-#             test_idx = torch.as_tensor(test_idx)
-
-#         feat = graph.ndata["feat"]
-#         feat = scale_feats(feat)
-#         graph.ndata["feat"] = feat
-
-#         train_mask = torch.full((num_nodes,), False).index_fill_(0, train_idx, True)
-#         val_mask = torch.full((num_nodes,), False).index_fill_(0, val_idx, True)
-#         test_mask = torch.full((num_nodes,), False).index_fill_(0, test_idx, True)
-#         graph.ndata["label"] = labels.view(-1)
-#         graph.ndata["train_mask"], graph.ndata["val_mask"], graph.ndata["test_mask"] = train_mask, val_mask, test_mask
-#     else:
-#         graph = dataset[0]
-#         graph = graph.remove_self_loop()
-#         graph = graph.add_self_loop()
-#     num_features = graph.ndata["feat"].shape[1]
-#     num_classes = dataset.num_classes
-#     return graph, (num_features, num_classes)
-
-
 def load_ST_dataset(dataset_name, section_ids=["151507", "151508"], hvgs=5000, num_classes=7, is_cached_h5ad=True, st_data_dir="./", h5ad_save_dir="./", is_cached=False, alpha_=0.2, alpha_list=[0.2], ot_pi_root="./"):
     assert dataset_name in ST_DICT, f"Unknow dataset: {dataset_name}."
     name_ = '_'.join(section_ids)
@@ -655,26 +617,27 @@ def load_ST_dataset_hard(dataset_name, pi, section_ids=["151507", "151508"], hvg
         for batch_id in range(1,len(section_ids)):
             adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
 
-        assert adj_concat.shape[0] == pi.shape[0] + pi.shape[1], "adj matrix shape is not consistent with the pi matrix"
+        if pi is not None:
+            assert adj_concat.shape[0] == pi.shape[0] + pi.shape[1], "adj matrix shape is not consistent with the pi matrix"
 
-        """keep max"""
-        max_values = np.max(pi, axis=1)
+            """keep max"""
+            max_values = np.max(pi, axis=1)
 
-        # Create a new array with zero
-        pi_keep_argmax = np.zeros_like(pi)
+            # Create a new array with zero
+            pi_keep_argmax = np.zeros_like(pi)
 
-        # Loop through each row and set the maximum value to 1 (or any other desired value)
-        for i in range(pi.shape[0]):
-            pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
-        
-        pi = pi_keep_argmax
-        """"""
+            # Loop through each row and set the maximum value to 1 (or any other desired value)
+            for i in range(pi.shape[0]):
+                pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
+            
+            pi = pi_keep_argmax
+            """"""
 
-        for i in range(pi.shape[0]):
-            for j in range(pi.shape[1]):
-                if pi[i][j] > 0:
-                    adj_concat[i][j+pi.shape[0]] = 1
-                    adj_concat[j+pi.shape[0]][i] = 1
+            for i in range(pi.shape[0]):
+                for j in range(pi.shape[1]):
+                    if pi[i][j] > 0:
+                        adj_concat[i][j+pi.shape[0]] = 1
+                        adj_concat[j+pi.shape[0]][i] = 1
         
         edgeList = np.nonzero(adj_concat)
         graph = dgl.graph((edgeList[0], edgeList[1]))
@@ -754,15 +717,6 @@ def preprocess(graph):
     graph = graph.remove_self_loop().add_self_loop()
     # graph.create_formats_()
     return graph
-
-
-# def scale_feats(x):
-#     logging.info("### scaling features ###")
-#     scaler = StandardScaler()
-#     feats = x.numpy()
-#     scaler.fit(feats)
-#     feats = torch.from_numpy(scaler.transform(feats)).float()
-#     return feats
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ Implementation for Recomb 2024 paper:  [MaskGraphene]().
 
 <h2>Dependencies </h2>
 
-* Python >= 3.7
+* Python >= 3.9
 * [Pytorch](https://pytorch.org/) == 2.0.1
 * anndata==0.9.2
 * h5py==3.9.0
@@ -18,10 +18,10 @@ Implementation for Recomb 2024 paper:  [MaskGraphene]().
 * rpy2==3.5.14
 * scanpy==1.9.1
 * umap-learn==0.5.4
-* wandb==0.15.10
+* wandb
 * pyyaml == 5.4.1
 
-<h2>Installation with conda</h2>
+<h2>Installation</h2>
 
 ```bash
 conda create -n MaskGraphene python=3.9 
@@ -52,8 +52,8 @@ python ./maskgraphene_main.py --max_epoch 1500 --max_epoch_triplet 700 --logging
 Supported ST datasets:
 
 <!-- * mini batch node classification:  `ogbn-arxiv`, `ogbn-products`, `mag-scholar-f`, `ogbn-papers100M` -->
-* 10x Visium: `DLPFC`, `Mouse Sagittal Brain`
-* Others: `mouse Hypothalamus`, `Embryo`
+* 10x Visium: [`DLPFC`](), [`Mouse Sagittal Brain`]()
+* Others: [`mouse Hypothalamus`](), [`Embryo`]()
 
 
 
