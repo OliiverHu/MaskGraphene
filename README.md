@@ -56,6 +56,9 @@ Supported ST datasets:
 * Others: [`mouse Hypothalamus`](), [`Embryo`]()
 
 
+<h2>Acknowledgement </h2>
+
+Some of the codes are adapted from [GraphMAE](https://github.com/THUDM/GraphMAE)/[GraphMAE2](https://github.com/THUDM/GraphMAE2) and [STAligner](https://github.com/zhoux85/STAligner)
 
 <h1> Citing </h1>
 
