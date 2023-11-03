@@ -157,13 +157,13 @@ def main(args):
     logs = False
     use_scheduler = args.scheduler
 
-    """mid files save path"""
-    exp_fig_dir = args.exp_fig_dir
-    st_data_dir = args.st_data_dir
-
     """ST loading"""
     section_ids = args.section_ids.lstrip().split(",")
     
+    """mid files save path"""
+    exp_fig_dir = args.exp_fig_dir
+    st_data_dir = args.st_data_dir
+    pi_dir= os.path.join(args.pi_dir, dataset_name+'_'.join(section_ids))
 
     model_dir = "checkpoints"
     os.makedirs(model_dir, exist_ok=True)
@@ -179,10 +179,10 @@ def main(args):
     if not os.path.exists(os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids))):
         os.makedirs(os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids)))
     # exp_fig_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1016_2", dataset_name+'_'.join(section_ids))
-    if dataset_name == "DLPFC":
-        pi_dir = os.path.join("./PI", dataset_name+'_'.join(section_ids))
-    if dataset_name == "mHypothalamus":
-        pi_dir = os.path.join("./PI", dataset_name+'_'.join(section_ids))
+    # if dataset_name == "DLPFC":
+    #     pi_dir = os.path.join("../PI", dataset_name+'_'.join(section_ids))
+    # if dataset_name == "mHypothalamus":
+    #     pi_dir = os.path.join("../PI", dataset_name+'_'.join(section_ids))
     exp_fig_dir = os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids))
 
     counter = 0
