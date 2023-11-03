@@ -131,6 +131,8 @@ def build_args_ST():
     parser.add_argument("--exp_fig_dir", type=str, default="./")
     parser.add_argument("--h5ad_save_dir", type=str, default="./")
     parser.add_argument("--st_data_dir", type=str, default="./")
+    parser.add_argument("--pi_dir", type=str, default="./")
+
     parser.add_argument("--consecutive_prior", type=int, default=0)
 
     parser.add_argument("--section_ids", type=str, help="a list of slice name strings sep by comma, with no spacing")
@@ -196,7 +198,6 @@ def build_args_ST():
     parser.add_argument("--sampling_method", type=str, default="saint", help="sampling method, `lc` or `saint`")
 
     parser.add_argument("--label_rate", type=float, default=1.0)
-    parser.add_argument("--data_dir", type=str, default="/home/yunfei/spatial_benchmarking/benchmarking_data")
 
     parser.add_argument("--lam", type=float, default=1.0)  # mixing coeff in latent with recon balancing
     parser.add_argument("--full_graph_forward", action="store_true", default=False)
