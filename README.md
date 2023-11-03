@@ -55,9 +55,6 @@ Supported ST datasets:
 * Others: [`mouse Hypothalamus`](https://datadryad.org/stash/dataset/doi:10.5061/dryad.8t8s248), [`Embryo`](https://db.cngb.org/stomics/mosta/resource/)
 
 
-<h2>Acknowledgement </h2>
-
-Some of the codes are adapted from [GraphMAE](https://github.com/THUDM/GraphMAE)/[GraphMAE2](https://github.com/THUDM/GraphMAE2) and [STAligner](https://github.com/zhoux85/STAligner)
 
 <h1> Citing </h1>
 
