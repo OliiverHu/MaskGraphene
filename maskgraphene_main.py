@@ -3,20 +3,20 @@ import numpy as np
 from tqdm import tqdm
 import torch
 import pickle
+import wandb
 
 from utils import (
     build_args_ST,
     create_optimizer,
     set_random_seed,
-    WandbLogger,
-    TBLogger,
     get_current_lr,
 )
-from datasets.data_proc import load_ST_dataset_hard
-from datasets.st_loading_utils import create_dictionary_otn, visualization_umap_spatial
+from datasets.data_proc import load_ST_dataset_hard, load_ST_dataset_hard_erase
+from datasets.st_loading_utils import create_dictionary_otn, visualization_umap_spatial, create_dictionary_mnn, cal_layer_based_alignment_result, cal_layer_based_alignment_result_mhypo
 from models import build_model_ST
 import os
 import scanpy as sc
+import sklearn.metrics.pairwise
 
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -42,11 +42,6 @@ def MG(model, graph, feat, optimizer, max_epoch, device, adata_concat_, schedule
         if scheduler is not None:
             scheduler.step()
 
-        epoch_iter.set_description(f"# Epoch {epoch}: train_loss: {loss.item():.4f}")
-        if logger is not None:
-            loss_dict["lr"] = get_current_lr(optimizer)
-            logger.log(loss_dict, step=epoch)
-
     with torch.no_grad():
         z = model.embed(graph, x)
         # print(z)
@@ -67,7 +62,8 @@ def MG_triplet(model, graph, feat, optimizer, max_epoch, device, adata_concat_, 
     section_ids = np.array(adata_concat_.obs['batch_name'].unique())
 
     """a list of precomputed pi, it has the same length as the iter_comb"""
-    mnn_dict = create_dictionary_otn(adata_concat_, pis_list_, section_ids, batch_name='batch_name', conf_thres = 0.0, mode="normal", verbose = 1, iter_comb=iter_comb)
+    # mnn_dict = create_dictionary_otn(adata_concat_, pis_list_, section_ids, batch_name='batch_name', conf_thres = 0.0, mode="normal", verbose = 1, iter_comb=iter_comb)
+    mnn_dict = create_dictionary_mnn(adata_concat_, use_rep="MG", batch_name='batch_name', k=50, iter_comb=iter_comb)
     anchor_ind = []
     positive_ind = []
     negative_ind = []
@@ -121,11 +117,13 @@ def MG_triplet(model, graph, feat, optimizer, max_epoch, device, adata_concat_, 
 
         if scheduler is not None:
             scheduler.step()
-        loss_dict = {"loss": loss.item()}
+        # loss_dict = {"loss": loss.item()}
         epoch_iter.set_description(f"# Epoch {epoch}: train_loss: {loss.item():.4f}")
+        
         if logger is not None:
-            loss_dict["lr"] = get_current_lr(optimizer)
-            logger.log(loss_dict, step=epoch)
+            # loss_dict["lr"] = get_current_lr(optimizer)
+            # logger.log(loss_dict, step=epoch)
+            logger.log({'epoch': epoch+1, 'ratio': r, 'layer-wise acc': lw_acc[0], 'loss':loss.item()})
 
     with torch.no_grad():
         z = model.embed(graph, x)
@@ -143,15 +141,15 @@ def main(args):
     max_epoch = args.max_epoch
     max_epoch_triplet = args.max_epoch_triplet
 
-    num_hidden = args.num_hidden
-    num_layers = args.num_layers
-    encoder_type = args.encoder
-    decoder_type = args.decoder
-    replace_rate = args.replace_rate
+    # num_hidden = args.num_hidden
+    # num_layers = args.num_layers
+    # encoder_type = args.encoder
+    # decoder_type = args.decoder
+    # replace_rate = args.replace_rate
     is_consecutive = args.consecutive_prior
 
     optim_type = args.optimizer 
-    loss_fn = args.loss_fn
+    # loss_fn = args.loss_fn
 
     lr = args.lr
     weight_decay = args.weight_decay
@@ -180,7 +178,12 @@ def main(args):
     ari_2_pre = []
     if not os.path.exists(os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids))):
         os.makedirs(os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids)))
-    exp_fig_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1016_2", dataset_name+'_'.join(section_ids))
+    # exp_fig_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1016_2", dataset_name+'_'.join(section_ids))
+    if dataset_name == "DLPFC":
+        pi_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1020_1", dataset_name+'_'.join(section_ids))
+    if dataset_name == "mHypothalamus":
+        pi_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1028_1", dataset_name+'_'.join(section_ids))
+    exp_fig_dir = os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids))
 
     counter = 0
     # use_cached_pi = True
@@ -189,7 +192,8 @@ def main(args):
         set_random_seed(seed)
 
         if logs:
-            logger = WandbLogger(log_path=f"{dataset_name}_{'_'.join(section_ids)}_loss_{loss_fn}_rpr_{replace_rate}_nh_{num_hidden}_nl_{num_layers}_lr_{lr}_mp_{max_epoch}__wd_{weight_decay}__{encoder_type}_{decoder_type}", project="M-DOT", args=args)
+            # logger = WandbLogger(log_path=f"{dataset_name}_{'_'.join(section_ids)}_loss_{loss_fn}_rpr_{replace_rate}_nh_{num_hidden}_nl_{num_layers}_lr_{lr}_mp_{max_epoch}__wd_{weight_decay}__{encoder_type}_{decoder_type}", project="M-DOT", args=args)
+            logger = wandb.init(name='_'.join(section_ids)+"_seed"+str(seed))
             # logger = TBLogger(name=f"{dataset_name}_loss_{loss_fn}_rpr_{replace_rate}_nh_{num_hidden}_nl_{num_layers}_lr_{lr}_mp_{max_epoch}__wd_{weight_decay}__{encoder_type}_{decoder_type}")
         else:
             logger = None
@@ -204,7 +208,7 @@ def main(args):
         """calculate hard links if possible, otherwise, skip this stage"""
         
         if is_consecutive:
-            file = open(os.path.join(exp_fig_dir, "S.pickle"),'rb') 
+            file = open(os.path.join(pi_dir, "S.pickle"),'rb') 
             global_PI = pickle.load(file)
             global_PI = global_PI.toarray()
             """
@@ -212,7 +216,7 @@ def main(args):
             """
             
             """train with MSSL"""
-            graph, num_features, ad_concat = load_ST_dataset_hard(dataset_name=dataset_name, pi=global_PI, section_ids=section_ids, hvgs=args.hvgs, st_data_dir=st_data_dir)
+            graph, num_features, ad_concat = load_ST_dataset_hard_erase(dataset_name=dataset_name, pi=global_PI, section_ids=section_ids, hvgs=args.hvgs, st_data_dir=st_data_dir)
             args.num_features = num_features
             x = graph.ndata["feat"]
 
@@ -239,6 +243,8 @@ def main(args):
             ari_ = visualization_umap_spatial(ad_temp=ad_concat_1, section_ids=section_ids, exp_fig_dir=exp_fig_dir, dataset_name=dataset_name, num_iter=counter, identifier="stage1", num_class=args.num_class, use_key="MG")
             ari_1_pre.append(ari_[0])
             ari_2_pre.append(ari_[1])
+            if logger is not None:
+                logger.log({"slice1_ari_pre": ari_[0], "slice2_ari_pre": ari_[1]})
             # print(section_id)
             print(section_ids[0], ', ARI = %01.3f' % ari_[0])
             print(section_ids[1], ', ARI = %01.3f' % ari_[1])
@@ -251,6 +257,8 @@ def main(args):
             counter += 1
             ari_1.append(ari_[0])
             ari_2.append(ari_[1])
+            if logger is not None:
+                logger.log({"slice1_ari_after": ari_[0], "slice2_ari_after": ari_[1]})
             print(section_ids[0], ', ARI = %01.3f' % ari_[0])
             print(section_ids[1], ', ARI = %01.3f' % ari_[1])
         else:
@@ -259,7 +267,7 @@ def main(args):
             STAGE 2
             """
 
-            """train with MSSL + triplet loss"""
+            """train with MSSL"""
             logging.info("training Model with sce + triplet loss ")
 
             graph, num_features, ad_concat = load_ST_dataset_hard(dataset_name=dataset_name, pi=global_PI, section_ids=section_ids, hvgs=args.hvgs, st_data_dir=st_data_dir)
@@ -284,34 +292,31 @@ def main(args):
             model.to(device)
             graph = graph.to(device)
             x = x.to(device)
-
-            # train_MDOT(model, graph, feat, optimizer, max_epoch, device, adata_concat_, pis_list_, scheduler, logger=None, verbose=True, iter_comb=None):
+            # print(ad_concat[0])
+            model, ad_concat_1 = MG(model, graph, x, optimizer, max_epoch, device, ad_concat, scheduler, logger=logger, key_="MG")
+            # print(ad_concat_1)
+            # print(ad_concat_1.obsm["MG"])
+            ari_ = visualization_umap_spatial(ad_temp=ad_concat_1, section_ids=section_ids, exp_fig_dir=exp_fig_dir, dataset_name=dataset_name, num_iter=counter, identifier="stage1", num_class=args.num_class, use_key="MG")
+            ari_1_pre.append(ari_[0])
+            ari_2_pre.append(ari_[1])
+            if logger is not None:
+                logger.log({"slice1_ari_pre": ari_[0], "slice2_ari_pre": ari_[1]})
+            # print(section_id)
+            print(section_ids[0], ', ARI = %01.3f' % ari_[0])
+            print(section_ids[1], ', ARI = %01.3f' % ari_[1])
+            # exit(-1)
+            """train with MSSL + triplet loss"""
             model, ad_concat_2 = MG_triplet(model, graph, x, optimizer, max_epoch_triplet, device, adata_concat_=ad_concat_1, pis_list_=[global_PI], scheduler=scheduler, logger=logger, key_="MG_triplet")
             ari_ = visualization_umap_spatial(ad_temp=ad_concat_2, section_ids=section_ids, exp_fig_dir=exp_fig_dir, dataset_name=dataset_name, num_iter=counter, identifier="stage2", num_class=args.num_class, use_key="MG_triplet")
             counter += 1
             ari_1.append(ari_[0])
             ari_2.append(ari_[1])
+            if logger is not None:
+                logger.log({"slice1_ari_after": ari_[0], "slice2_ari_after": ari_[1]})
             print(section_ids[0], ', ARI = %01.3f' % ari_[0])
             print(section_ids[1], ', ARI = %01.3f' % ari_[1])
-    
-    # doc aris for boxplot 
-    """write to file for boxplot later"""
-    with open(os.path.join(args.exp_fig_dir, 'MG_soft.txt'), 'a+') as f:
-        f.write(section_ids[0] + ' ')
-        f.write(' '.join([str(i) for i in ari_1]))
-        f.write('\n')
-        f.write(section_ids[1] + ' ')
-        f.write(' '.join([str(i) for i in ari_2]))
-        f.write('\n')
-        f.write('\n')
-    with open(os.path.join(args.exp_fig_dir, 'MG_hard.txt'), 'a+') as f:
-        f.write(section_ids[0] + ' ')
-        f.write(' '.join([str(i) for i in ari_1_pre]))
-        f.write('\n')
-        f.write(section_ids[1] + ' ')
-        f.write(' '.join([str(i) for i in ari_2_pre]))
-        f.write('\n')
-        f.write('\n')
+        if logger is not None:
+            logger.finish()
 
     return None
 
@@ -319,8 +324,4 @@ def main(args):
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":
     args = build_args_ST()
-    # if args.use_cfg:
-    #     args = load_best_configs(args)
-    # print(args)
     a_ari = main(args)
-    # print(a_ari)

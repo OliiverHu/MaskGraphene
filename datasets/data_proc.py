@@ -21,14 +21,6 @@ import scipy
 from scipy.sparse import csr_matrix
 import networkx as nx
 
-
-GRAPH_DICT = {
-    "cora": CoraGraphDataset,
-    "citeseer": CiteseerGraphDataset,
-    "pubmed": PubmedGraphDataset,
-    "ogbn-arxiv": DglNodePropPredDataset,
-}
-
 ST_DICT = {
     "DLPFC", "BC", "mHypothalamus", "mMAMP", "Embryo"
 }
@@ -621,16 +613,16 @@ def load_ST_dataset_hard(dataset_name, pi, section_ids=["151507", "151508"], hvg
             assert adj_concat.shape[0] == pi.shape[0] + pi.shape[1], "adj matrix shape is not consistent with the pi matrix"
 
             """keep max"""
-            max_values = np.max(pi, axis=1)
+            # max_values = np.max(pi, axis=1)
 
-            # Create a new array with zero
-            pi_keep_argmax = np.zeros_like(pi)
+            # # Create a new array with zero
+            # pi_keep_argmax = np.zeros_like(pi)
 
-            # Loop through each row and set the maximum value to 1 (or any other desired value)
-            for i in range(pi.shape[0]):
-                pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
+            # # Loop through each row and set the maximum value to 1 (or any other desired value)
+            # for i in range(pi.shape[0]):
+            #     pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
             
-            pi = pi_keep_argmax
+            # pi = pi_keep_argmax
             """"""
 
             for i in range(pi.shape[0]):
@@ -672,16 +664,16 @@ def load_ST_dataset_hard(dataset_name, pi, section_ids=["151507", "151508"], hvg
         assert adj_concat.shape[0] == pi.shape[0] + pi.shape[1], "adj matrix shape is not consistent with the pi matrix"
 
         """keep max"""
-        max_values = np.max(pi, axis=1)
+        # max_values = np.max(pi, axis=1)
 
-        # Create a new array with zero
-        pi_keep_argmax = np.zeros_like(pi)
+        # # Create a new array with zero
+        # pi_keep_argmax = np.zeros_like(pi)
 
-        # Loop through each row and set the maximum value to 1 (or any other desired value)
-        for i in range(pi.shape[0]):
-            pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
+        # # Loop through each row and set the maximum value to 1 (or any other desired value)
+        # for i in range(pi.shape[0]):
+        #     pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
         
-        pi = pi_keep_argmax
+        # pi = pi_keep_argmax
         """"""
 
         for i in range(pi.shape[0]):
@@ -699,6 +691,167 @@ def load_ST_dataset_hard(dataset_name, pi, section_ids=["151507", "151508"], hvg
     num_features = graph.ndata["feat"].shape[1]
     # num_classes = dataset.num_classes
     return graph, num_features, adata_concat
+
+
+def load_ST_dataset_hard_erase(dataset_name, pi, section_ids=["151507", "151508"], hvgs=5000, st_data_dir="./"):
+    assert dataset_name in ST_DICT, f"Unknow dataset: {dataset_name}."
+    name_ = '_'.join(section_ids)
+    
+    if "DLPFC" in dataset_name:
+        # ad_list = []
+        Batch_list = []
+        adj_list = []
+        # delist = []
+        
+        for section_id in section_ids:
+            ad_ = load_DLPFC(root_dir=st_data_dir, section_id=section_id)
+            ad_.var_names_make_unique(join="++")
+
+            # """add cached de list"""
+            # file_path = "/home/yunfei/spatial_dl_integration/MaskGraphene/de_temp/"+section_id+"_de_list.txt"
+            # with open(file_path, 'r') as file:
+            #     lines = file.readlines()
+            # de_ = [line.strip() for line in lines]
+            # delist.append(de_)
+            # make spot name unique
+            ad_.obs_names = [x+'_'+section_id for x in ad_.obs_names]
+            
+            # Constructing the spatial network
+            Cal_Spatial_Net(ad_, rad_cutoff=150) # the spatial network are saved in adata.uns[‘adj’]
+            adj_list.append(ad_.uns['adj'])
+            Batch_list.append(ad_)
+        
+        # print(np.nonzero())
+        ad1, ad2 = simple_impute(Batch_list[0], Batch_list[1], pi)
+        Batch_list = [ad1, ad2]
+        Batch_list_new = []
+        for ad_ in Batch_list:
+            # Normalization
+            sc.pp.highly_variable_genes(ad_, flavor="seurat_v3", n_top_genes=hvgs)
+            sc.pp.normalize_total(ad_, target_sum=1e4)
+            sc.pp.log1p(ad_)
+            ad_ = ad_[:, ad_.var['highly_variable']]
+
+            # union_list = set(item for sublist in delist for item in sublist)
+            # ad_ = ad_[:, list(union_list)]
+            Batch_list_new.append(ad_)
+
+            
+        adata_concat = ad.concat(Batch_list_new, label="slice_name", keys=section_ids, uns_merge="same")
+        adata_concat.obs['original_clusters'] = adata_concat.obs['original_clusters'].astype('category')
+        adata_concat.obs["batch_name"] = adata_concat.obs["slice_name"].astype('category')
+
+        adj_concat = np.asarray(adj_list[0].todense())
+        for batch_id in range(1,len(section_ids)):
+            adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
+
+        if pi is not None:
+            assert adj_concat.shape[0] == pi.shape[0] + pi.shape[1], "adj matrix shape is not consistent with the pi matrix"
+
+            """keep max"""
+            # max_values = np.max(pi, axis=1)
+
+            # # Create a new array with zero
+            # pi_keep_argmax = np.zeros_like(pi)
+
+            # # Loop through each row and set the maximum value to 1 (or any other desired value)
+            # for i in range(pi.shape[0]):
+            #     pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
+            
+            # pi = pi_keep_argmax
+            """"""
+
+            for i in range(pi.shape[0]):
+                for j in range(pi.shape[1]):
+                    if pi[i][j] > 0:
+                        adj_concat[i][j+pi.shape[0]] = 1
+                        adj_concat[j+pi.shape[0]][i] = 1
+        
+        edgeList = np.nonzero(adj_concat)
+        graph = dgl.graph((edgeList[0], edgeList[1]))
+        graph.ndata["feat"] = torch.tensor(adata_concat.X)
+    elif "mHypothalamus" in dataset_name:
+        Batch_list = []
+        adj_list = []
+        for section_id in section_ids:
+            ad_ = load_mHypothalamus(root_dir=st_data_dir, section_id=section_id)
+            ad_.var_names_make_unique(join="++")
+        
+            # make spot name unique
+            ad_.obs_names = [x+'_'+section_id for x in ad_.obs_names]
+            
+            # Constructing the spatial network
+            Cal_Spatial_Net(ad_, rad_cutoff=35) # the spatial network are saved in adata.uns[‘adj’]
+            
+            # Normalization
+            sc.pp.normalize_total(ad_, target_sum=1e4)
+            sc.pp.log1p(ad_)
+
+            adj_list.append(ad_.uns['adj'])
+            Batch_list.append(ad_)
+        adata_concat = ad.concat(Batch_list, label="slice_name", keys=section_ids, uns_merge="same")
+        adata_concat.obs['original_clusters'] = adata_concat.obs['original_clusters'].astype('category')
+        adata_concat.obs["batch_name"] = adata_concat.obs["slice_name"].astype('category')
+
+        adj_concat = np.asarray(adj_list[0].todense())
+        for batch_id in range(1,len(section_ids)):
+            adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
+
+        assert adj_concat.shape[0] == pi.shape[0] + pi.shape[1], "adj matrix shape is not consistent with the pi matrix"
+
+        """keep max"""
+        # max_values = np.max(pi, axis=1)
+
+        # # Create a new array with zero
+        # pi_keep_argmax = np.zeros_like(pi)
+
+        # # Loop through each row and set the maximum value to 1 (or any other desired value)
+        # for i in range(pi.shape[0]):
+        #     pi_keep_argmax[i, np.argmax(pi[i])] = max_values[i]
+        
+        # pi = pi_keep_argmax
+        """"""
+
+        for i in range(pi.shape[0]):
+            for j in range(pi.shape[1]):
+                if pi[i][j] > 0:
+                    adj_concat[i][j+pi.shape[0]] = 1
+                    adj_concat[j+pi.shape[0]][i] = 1
+        
+        edgeList = np.nonzero(adj_concat)
+        graph = dgl.graph((edgeList[0], edgeList[1]))
+        graph.ndata["feat"] = torch.tensor(adata_concat.X).float()
+    else:
+        # print("not implemented ")
+        raise NotImplementedError
+    num_features = graph.ndata["feat"].shape[1]
+    # num_classes = dataset.num_classes
+    return graph, num_features, adata_concat
+
+
+def simple_impute(ad1, ad2, pi):
+    ad1.X = ad1.X.toarray()
+    ad2.X = ad2.X.toarray()
+    ad1_ = ad.AnnData(X=ad1.X, obs=ad1.obs, var=ad1.var, obsm=ad1.obsm)
+    ad2_ = ad.AnnData(X=ad2.X, obs=ad2.obs, var=ad2.var, obsm=ad2.obsm)
+    
+    for i, row in enumerate(pi):
+        # Find the target column index (argmax)
+        target_col = np.argmax(row)
+        
+        # Create a mask for positions where arr1 is zero and arr2 is non-zero
+        mask1 = (ad1.X[i] == 0) & (ad2.X[target_col] != 0)
+
+        # Use the mask to fill up the zeros in arr1 with corresponding values from arr2
+        ad1_.X[i, mask1] = ad2_.X[target_col, mask1]
+
+        # Create a mask for positions where arr1 is zero and arr2 is non-zero
+        mask2 = (ad2.X[target_col] == 0) & (ad1.X[i] != 0)
+
+        # Use the mask to fill up the zeros in arr1 with corresponding values from arr2
+        ad2_.X[target_col, mask2] = ad1_.X[i, mask2]
+
+    return ad1_, ad2_
     
 
 def preprocess(graph):
