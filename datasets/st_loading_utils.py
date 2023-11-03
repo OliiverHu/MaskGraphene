@@ -626,76 +626,21 @@ def cal_layer_based_alignment_result(alignment, s1, s2):
     return res
 
 
+def cal_layer_based_alignment_result_mhypo(alignment, s1, s2):
+    labels = []
+    labels.extend(s1.obs['original_clusters'])
+    labels.extend(s2.obs['original_clusters'])
+
+    res = []
+    cnt0 = 0
+
+    for i, elem in enumerate(alignment):
+        if labels[i] == labels[elem.argmax() + alignment.shape[0]]:
+            cnt0 += 1
+
+    return cnt0/alignment.shape[0]
+
 if __name__ == '__main__':
-    # for sec in ['151507', '151508', '151509', '151510', '151669', '151670', '151671', '151672', '151673', '151674', '151675', '151676']:
-    #     ad = load_DLPFC(root_dir='/home/yunfei/spatial_benchmarking/benchmarking_data/DLPFC12', section_id=sec)
-    #     # print(ad.obs)
-    #     # exit(-1)
-    #     # spatial = np.vstack((ad.obs['pixel_x'].to_numpy(), ad.obs['pixel_y'].to_numpy()))
-    #     # ad.obsm['spatial'] = spatial.T
-    #     # anndata_visualization(ad, 'dlpfc_' + sec, col_name='Ground Truth', spot_size=75)
-    #     print(sec)
-    #     print(ad.X.shape)
-    # print("dlpfc test passed")
-
-    # ad = load_BC(root_dir='/home/yunfei/spatial_benchmarking/benchmarking_data/BC', section_id='section1')
-    # # anndata_visualization(ad, 'bc_section1', col_name='Ground Truth', spot_size=155)
-    # # print(sec)
-    # print(ad.X.shape)
-    # print("bc test passed")
-
-    # for sec in ['20180417_BZ5_control', '20180419_BZ9_control', '20180424_BZ14_control']:
-    #     ad = load_mPFC(root_dir = '/home/yunfei/spatial_benchmarking/benchmarking_data/STARmap_mouse_PFC', section_id=sec)
-    #     spatial = np.vstack((ad.obs['x'].to_numpy(), ad.obs['y'].to_numpy()))
-    #     ad.obsm['spatial'] = spatial.T
-    #     # print(ad.obs)
-    #     # anndata_visualization(ad, 'mpfc_' + sec, col_name='z', spot_size=175)
-    #     print(sec)
-    #     print(ad.X.shape)
-    # print("mPFC test passed")
-
-    # for sec in ['-0.04', '-0.09', '-0.14', '-0.19', '-0.24', '-0.29']:
-    #     ad = load_mHypothalamus(root_dir='/home/yunfei/spatial_benchmarking/benchmarking_data/mHypothalamus', section_id=sec)
-    #     print(ad.obs)
-    #     spatial = np.vstack((ad.obs['x'].to_numpy(), ad.obs['y'].to_numpy()))
-    #     ad.obsm['spatial'] = spatial.T
-    #     print(sec)
-    #     print(ad.X.shape)
-    #     # exit(-1)
-    #     # anndata_visualization(ad, 'mHypo_' + sec, col_name='GT', spot_size=30)
-    #     # print(sec)
-    #     # print(ad.obs['GT'].nunique())
-    # print("mH test passed")
-
-    # ad = load_mVC(root_dir='/home/yunfei/spatial_benchmarking/benchmarking_data/STARmap_mouse_visual_cortex', section_id='STARmap_20180505_BY3_1k.h5ad')
-    # print(ad.obs)
-    # # anndata_visualization(ad, 'mvc_' + 'STARmap_20180505_BY3_1k.h5ad', col_name='Ground Truth', spot_size=175)
-    # # print(sec)
-    # print(ad.X.shape)
-    # print("mVC test passed")
-
-    # for sec in ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G2', 'H1']:
-    #     ad = load_her2_tumor(root_dir='/home/yunfei/spatial_benchmarking/benchmarking_data/Her2_tumor', section_id=sec)
-    #     spatial = np.vstack((ad.obs['pixel_x'].to_numpy(), ad.obs['pixel_y'].to_numpy()))
-    #     ad.obsm['spatial'] = spatial.T
-    #     # anndata_visualization(ad, 'her2tumor_' + sec, col_name='label', spot_size=75)
-    #     print(sec)
-    #     print(ad.X.shape)
-    # print("her2tumor test passed")
-
-    # ad = load_mMAMP()
-    # # print(ad.obs)
-    # # anndata_visualization(ad, 'mMAMP_anterior', col_name='ground_truth', spot_size=80)
-    # print(ad.X.shape)
-
-    for sec in ['human_bc_spatial_1142243F', 'human_bc_spatial_1160920F', 'human_bc_spatial_CID4290', 'human_bc_spatial_CID4465', 'human_bc_spatial_CID4535', 'human_bc_spatial_CID44971', 'human_bc_spatial_Parent_Visium_Human_BreastCancer',
-                'human_bc_spatial_V1_Breast_Cancer_Block_A_Section_1', 'human_bc_spatial_V1_Breast_Cancer_Block_A_Section_2', 'human_bc_spatial_V1_Human_Invasive_Ductal_Carcinoma', 'human_bc_spatial_Visium_FFPE_Human_Breast_Cancer']:
-        ad = load_spacelhBC(root_dir='/home/yunfei/spatial_benchmarking/benchmarking_data/visium_human_breast_cancer', section_id=sec)
-        # spatial = np.vstack((ad.obs['pixel_x'].to_numpy(), ad.obs['pixel_y'].to_numpy()))
-        # ad.obsm['spatial'] = spatial.T
-        anndata_visualization(ad, sec, spot_size=75)
-        print(sec)
-        print(ad.X.shape)
-    print("spacelhBC test passed")
+    pass
 
 
