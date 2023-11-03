@@ -180,9 +180,9 @@ def main(args):
         os.makedirs(os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids)))
     # exp_fig_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1016_2", dataset_name+'_'.join(section_ids))
     if dataset_name == "DLPFC":
-        pi_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1020_1", dataset_name+'_'.join(section_ids))
+        pi_dir = os.path.join("./PI", dataset_name+'_'.join(section_ids))
     if dataset_name == "mHypothalamus":
-        pi_dir = os.path.join("/home/yunfei/spatial_dl_integration/MaskGraphene/exps_1028_1", dataset_name+'_'.join(section_ids))
+        pi_dir = os.path.join("./PI", dataset_name+'_'.join(section_ids))
     exp_fig_dir = os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids))
 
     counter = 0
