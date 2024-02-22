@@ -29,6 +29,10 @@ Please refer to this [page](https://maskgraphene-tutorial.readthedocs.io/en/late
 ```bash
 conda create -n MaskGraphene python=3.9 
 
+conda activate MG
+
+git clone https://github.com/OliiverHu/MaskGraphene.git
+
 pip install -r requirements.txt
 ```
 
