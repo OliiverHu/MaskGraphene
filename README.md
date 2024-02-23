@@ -66,7 +66,7 @@ python ../maskgraphene_main.py --max_epoch 3000 --max_epoch_triplet 1000 --loggi
 **DLPFC 151507/151508 generate hard-links**
 
 ```bash
-python ../localMG_main.py --max_epoch 2000 --max_epoch_triplet 500 --logging False --section_ids "$i" --num_class 5 --load_model False --num_hidden "512,32"
+python ../localMG_main.py --max_epoch 2000 --max_epoch_triplet 500 --logging False --section_ids "151507,151508" --num_class 7 --load_model False --num_hidden "512,32"
                           --exp_fig_dir "./" --h5ad_save_dir "./" --st_data_dir "./"  --alpha_l 1 --lam 1 --loss_fn "sce" --mask_rate 0.5 --in_drop 0 --attn_drop 0 --remask_rate 0.1
                           --seeds 2023 --num_remasking 1 --hvgs 3000 --dataset DLPFC --consecutive_prior 1 --lr 0.001
 ```   
