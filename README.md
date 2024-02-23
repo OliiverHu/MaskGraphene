@@ -85,8 +85,18 @@ Supported ST datasets:
 * Others: [`mouse Hypothalamus`](https://datadryad.org/stash/dataset/doi:10.5061/dryad.8t8s248), [`Embryo`](https://db.cngb.org/stomics/mosta/resource/)
 
 
+<h2>Notebook Tutorials </h2>
 
-<h1> Citing </h1>
+[Tutorial 1: hard-links generation](https://github.com/maiziezhoulab/MaskGraphene/blob/main/Tutorial%201_Hard%20link%20generation.ipynb)
+
+[Tutorial 2: MG on DLPFC](https://github.com/maiziezhoulab/MaskGraphene/blob/main/Tutorial%202_MaskGraphene%20on%20DLPFC.ipynb)
+
+[Tutorial 3: MG on MHypo](https://github.com/maiziezhoulab/MaskGraphene/blob/main/Tutorial%203_MaskGraphene%20on%20MHypo.ipynb)
+
+[Tutorial 4: reproduction](https://github.com/maiziezhoulab/MaskGraphene/blob/main/Tutorial%204_Analyses%20reproduction.ipynb)
+
+
+<h2> Citing </h2>
 
 Currently under review
 
