@@ -4,8 +4,8 @@ from tqdm import tqdm
 import torch
 import anndata
 import dgl
-from datasets.st_loading_utils import load_DLPFC, create_dictionary_mnn, load_mHypothalamus
-from datasets.data_proc import Cal_Spatial_Net
+import scanpy as sc
+from sklearn.metrics import adjusted_rand_score as ari_score
 import scipy
 import paste
 import ot
@@ -20,136 +20,10 @@ from utils import (
     TBLogger,
     get_current_lr,
 )
-from datasets.data_proc import load_ST_dataset_hard
-from datasets.st_loading_utils import create_dictionary_otn, mclust_R, gmm_scikit, cal_layer_based_alignment_result, visualization_umap_spatial
+# from datasets.st_loading_utils import create_dictionary_otn, gmm_scikit, visualization_umap_spatial
+from datasets.st_loading_utils import create_dictionary_mnn, cal_layer_based_alignment_result, mclust_R
+from datasets.data_proc import localOT_loader
 from models import build_model_ST
-import scanpy as sc
-from sklearn.metrics import adjusted_rand_score as ari_score
-
-
-def cal_layer_based_alignment_result(alignment, s1, s2):
-    labels = []
-    labels.extend(s1.obs['original_clusters'])
-    labels.extend(s2.obs['original_clusters'])
-
-    res = []
-    l_dict = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6}
-    cnt0 = 0
-    cnt1 = 0
-    cnt2 = 0
-    cnt3 = 0
-    cnt4 = 0
-    cnt5 = 0
-    cnt6 = 0
-    for i, elem in enumerate(alignment):
-        if labels[i] == '-1' or labels[elem.argmax() + alignment.shape[0]] == '-1':
-            continue
-        if l_dict[labels[i]] == l_dict[labels[elem.argmax() + alignment.shape[0]]]:
-            cnt0 += 1
-        if abs(l_dict[labels[i]] - l_dict[labels[elem.argmax() + alignment.shape[0]]]) == 1:
-            cnt1 += 1
-        if abs(l_dict[labels[i]] - l_dict[labels[elem.argmax() + alignment.shape[0]]]) == 2:
-            cnt2 += 1
-        if abs(l_dict[labels[i]] - l_dict[labels[elem.argmax() + alignment.shape[0]]]) == 3:
-            cnt3 += 1
-        if abs(l_dict[labels[i]] - l_dict[labels[elem.argmax() + alignment.shape[0]]]) == 4:
-            cnt4 += 1
-        if abs(l_dict[labels[i]] - l_dict[labels[elem.argmax() + alignment.shape[0]]]) == 5:
-            cnt5 += 1
-        if abs(l_dict[labels[i]] - l_dict[labels[elem.argmax() + alignment.shape[0]]]) == 6:
-            cnt6 += 1
-    #print(alignment.shape[0])
-    #print(cnt0/alignment.shape[0], cnt1/alignment.shape[0], cnt2/alignment.shape[0], cnt3/alignment.shape[0], cnt4/alignment.shape[0], cnt5/alignment.shape[0], cnt6/alignment.shape[0])
-    #res.extend([cnt0/alignment.shape[0], cnt1/alignment.shape[0], cnt2/alignment.shape[0], cnt3/alignment.shape[0], cnt4/alignment.shape[0], cnt5/alignment.shape[0], cnt6/alignment.shape[0]])
-    res.extend([cnt0, cnt1, cnt2, cnt3, cnt4, cnt5, cnt6])
-    return res
-
-
-def localOT_loader(section_ids=["151507", "151508"], dataname="DLPFC", hvgs=5000, st_data_dir="./", hard_links=None):
-    # hard links is a mapping matrix (2d numpy array with the size of #slice1 spot by #slice2 spot)
-    if dataname == "DLPFC":
-        Batch_list = []
-        adj_list = []
-        for section_id in section_ids:
-            ad_ = load_DLPFC(root_dir=st_data_dir, section_id=section_id)
-            ad_.var_names_make_unique(join="++")
-        
-            # make spot name unique
-            ad_.obs_names = [x+'_'+section_id for x in ad_.obs_names]
-            
-            # Constructing the spatial network
-            Cal_Spatial_Net(ad_, rad_cutoff=150) # the spatial network are saved in adata.uns[‘adj’]
-            
-            # Normalization
-            sc.pp.highly_variable_genes(ad_, flavor="seurat_v3", n_top_genes=hvgs)
-            sc.pp.normalize_total(ad_, target_sum=1e4)
-            sc.pp.log1p(ad_)
-            ad_ = ad_[:, ad_.var['highly_variable']]
-
-            adj_list.append(ad_.uns['adj'])
-            Batch_list.append(ad_)
-        adata_concat = anndata.concat(Batch_list, label="slice_name", keys=section_ids, uns_merge="same")
-        adata_concat.obs['original_clusters'] = adata_concat.obs['original_clusters'].astype('category')
-        adata_concat.obs["batch_name"] = adata_concat.obs["slice_name"].astype('category')
-
-        adj_concat = np.asarray(adj_list[0].todense())
-        for batch_id in range(1,len(section_ids)):
-            adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
-        
-        """if hard links is not empty"""
-        if hard_links != None:
-            for i in range(hard_links.shape[0]):
-                for j in range(hard_links.shape[1]):
-                    if hard_links[i][j] > 0:
-                        adj_concat[i][j+hard_links.shape[0]] = 1
-                        adj_concat[j+hard_links.shape[0]][i] = 1
-
-        edgeList = np.nonzero(adj_concat)
-        graph = dgl.graph((edgeList[0], edgeList[1]))
-        graph.ndata["feat"] = torch.tensor(adata_concat.X.todense())
-        num_features = graph.ndata["feat"].shape[1]
-    elif dataname == "mHypothalamus":
-        Batch_list = []
-        adj_list = []
-        for section_id in section_ids:
-            ad_ = load_mHypothalamus(root_dir=st_data_dir, section_id=section_id)
-            ad_.var_names_make_unique(join="++")
-        
-            # make spot name unique
-            ad_.obs_names = [x+'_'+section_id for x in ad_.obs_names]
-            
-            # Constructing the spatial network
-            Cal_Spatial_Net(ad_, rad_cutoff=35) # the spatial network are saved in adata.uns[‘adj’]
-            
-            # Normalization
-            sc.pp.normalize_total(ad_, target_sum=1e4)
-            sc.pp.log1p(ad_)
-
-            adj_list.append(ad_.uns['adj'])
-            Batch_list.append(ad_)
-        adata_concat = anndata.concat(Batch_list, label="slice_name", keys=section_ids, uns_merge="same")
-        adata_concat.obs['original_clusters'] = adata_concat.obs['original_clusters'].astype('category')
-        adata_concat.obs["batch_name"] = adata_concat.obs["slice_name"].astype('category')
-
-        adj_concat = np.asarray(adj_list[0].todense())
-        for batch_id in range(1,len(section_ids)):
-            adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
-        
-        """if hard links is not empty"""
-        if hard_links != None:
-            for i in range(hard_links.shape[0]):
-                for j in range(hard_links.shape[1]):
-                    if hard_links[i][j] > 0:
-                        adj_concat[i][j+hard_links.shape[0]] = 1
-                        adj_concat[j+hard_links.shape[0]][i] = 1
-
-        edgeList = np.nonzero(adj_concat)
-        graph = dgl.graph((edgeList[0], edgeList[1]))
-        graph.ndata["feat"] = torch.tensor(adata_concat.X).float()
-        num_features = graph.ndata["feat"].shape[1]
-    else:
-        raise NotImplementedError
-    return graph, num_features, adata_concat
 
 
 def run_MG_aligner(graph, model, device, ad_concat, section_ids, max_epoch, max_epoch_triplet, optimizer, scheduler, logger, use_mnn=False):
