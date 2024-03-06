@@ -917,8 +917,12 @@ def localOT_loader(section_ids=["151507", "151508"], dataname="DLPFC", hvgs=5000
 
 
 def simple_impute(ad1, ad2, pi):
-    ad1.X = ad1.X.toarray()
-    ad2.X = ad2.X.toarray()
+    try:
+        ad1.X = ad1.X.toarray()
+        ad2.X = ad2.X.toarray()
+    except:
+        ad1.X = ad1.X
+        ad2.X = ad2.X
     ad1_ = ad.AnnData(X=ad1.X, obs=ad1.obs, var=ad1.var, obsm=ad1.obsm)
     ad2_ = ad.AnnData(X=ad2.X, obs=ad2.obs, var=ad2.var, obsm=ad2.obsm)
     
