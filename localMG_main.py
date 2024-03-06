@@ -22,7 +22,7 @@ from utils import (
 )
 from datasets.data_proc import load_ST_dataset_hard
 from datasets.st_loading_utils import create_dictionary_otn, mclust_R, gmm_scikit, cal_layer_based_alignment_result, visualization_umap_spatial
-from models import build_model, build_model_ST
+from models import build_model_ST
 import scanpy as sc
 from sklearn.metrics import adjusted_rand_score as ari_score
 
@@ -152,7 +152,7 @@ def localOT_loader(section_ids=["151507", "151508"], dataname="DLPFC", hvgs=5000
     return graph, num_features, adata_concat
 
 
-def run_mask_graphene_aligner(graph, model, device, ad_concat, section_ids, max_epoch, max_epoch_triplet, optimizer, scheduler, logger, use_mnn=False):
+def run_MG_aligner(graph, model, device, ad_concat, section_ids, max_epoch, max_epoch_triplet, optimizer, scheduler, logger, use_mnn=False):
     x = graph.ndata["feat"]
     model.to(device)
     graph = graph.to(device)
@@ -356,7 +356,7 @@ def localMG(args):
             else:
                 scheduler = None
             
-            batchlist_ = run_mask_graphene_aligner(graph, model_local_ot, device, ad_concat, section_ids, max_epoch=max_epoch, max_epoch_triplet=max_epoch_triplet, optimizer=optimizer, scheduler=scheduler, logger=logger, use_mnn=True)
+            batchlist_ = run_MG_aligner(graph, model_local_ot, device, ad_concat, section_ids, max_epoch=max_epoch, max_epoch_triplet=max_epoch_triplet, optimizer=optimizer, scheduler=scheduler, logger=logger, use_mnn=True)
 
             slice1 = batchlist_[0]
             slice2 = batchlist_[1]
