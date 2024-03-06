@@ -160,7 +160,7 @@ def main(args):
     """ST loading"""
     section_ids = args.section_ids.lstrip().split(",")
     
-    """mid files save path"""
+    """file save path"""
     exp_fig_dir = args.exp_fig_dir
     st_data_dir = args.st_data_dir
     pi_dir= os.path.join(args.pi_dir, dataset_name+'_'.join(section_ids))
