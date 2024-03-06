@@ -829,6 +829,93 @@ def load_ST_dataset_hard_erase(dataset_name, pi, section_ids=["151507", "151508"
     return graph, num_features, adata_concat
 
 
+def localOT_loader(section_ids=["151507", "151508"], dataname="DLPFC", hvgs=5000, st_data_dir="./", hard_links=None):
+    # hard links is a mapping matrix (2d numpy array with the size of #slice1 spot by #slice2 spot)
+    if dataname == "DLPFC":
+        Batch_list = []
+        adj_list = []
+        for section_id in section_ids:
+            ad_ = load_DLPFC(root_dir=st_data_dir, section_id=section_id)
+            ad_.var_names_make_unique(join="++")
+        
+            # make spot name unique
+            ad_.obs_names = [x+'_'+section_id for x in ad_.obs_names]
+            
+            # Constructing the spatial network
+            Cal_Spatial_Net(ad_, rad_cutoff=150) # the spatial network are saved in adata.uns[‘adj’]
+            
+            # Normalization
+            sc.pp.highly_variable_genes(ad_, flavor="seurat_v3", n_top_genes=hvgs)
+            sc.pp.normalize_total(ad_, target_sum=1e4)
+            sc.pp.log1p(ad_)
+            ad_ = ad_[:, ad_.var['highly_variable']]
+
+            adj_list.append(ad_.uns['adj'])
+            Batch_list.append(ad_)
+        adata_concat = anndata.concat(Batch_list, label="slice_name", keys=section_ids, uns_merge="same")
+        adata_concat.obs['original_clusters'] = adata_concat.obs['original_clusters'].astype('category')
+        adata_concat.obs["batch_name"] = adata_concat.obs["slice_name"].astype('category')
+
+        adj_concat = np.asarray(adj_list[0].todense())
+        for batch_id in range(1,len(section_ids)):
+            adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
+        
+        """if hard links is not empty"""
+        if hard_links != None:
+            for i in range(hard_links.shape[0]):
+                for j in range(hard_links.shape[1]):
+                    if hard_links[i][j] > 0:
+                        adj_concat[i][j+hard_links.shape[0]] = 1
+                        adj_concat[j+hard_links.shape[0]][i] = 1
+
+        edgeList = np.nonzero(adj_concat)
+        graph = dgl.graph((edgeList[0], edgeList[1]))
+        graph.ndata["feat"] = torch.tensor(adata_concat.X.todense())
+        num_features = graph.ndata["feat"].shape[1]
+    elif dataname == "mHypothalamus":
+        Batch_list = []
+        adj_list = []
+        for section_id in section_ids:
+            ad_ = load_mHypothalamus(root_dir=st_data_dir, section_id=section_id)
+            ad_.var_names_make_unique(join="++")
+        
+            # make spot name unique
+            ad_.obs_names = [x+'_'+section_id for x in ad_.obs_names]
+            
+            # Constructing the spatial network
+            Cal_Spatial_Net(ad_, rad_cutoff=35) # the spatial network are saved in adata.uns[‘adj’]
+            
+            # Normalization
+            sc.pp.normalize_total(ad_, target_sum=1e4)
+            sc.pp.log1p(ad_)
+
+            adj_list.append(ad_.uns['adj'])
+            Batch_list.append(ad_)
+        adata_concat = anndata.concat(Batch_list, label="slice_name", keys=section_ids, uns_merge="same")
+        adata_concat.obs['original_clusters'] = adata_concat.obs['original_clusters'].astype('category')
+        adata_concat.obs["batch_name"] = adata_concat.obs["slice_name"].astype('category')
+
+        adj_concat = np.asarray(adj_list[0].todense())
+        for batch_id in range(1,len(section_ids)):
+            adj_concat = scipy.linalg.block_diag(adj_concat, np.asarray(adj_list[batch_id].todense()))
+        
+        """if hard links is not empty"""
+        if hard_links != None:
+            for i in range(hard_links.shape[0]):
+                for j in range(hard_links.shape[1]):
+                    if hard_links[i][j] > 0:
+                        adj_concat[i][j+hard_links.shape[0]] = 1
+                        adj_concat[j+hard_links.shape[0]][i] = 1
+
+        edgeList = np.nonzero(adj_concat)
+        graph = dgl.graph((edgeList[0], edgeList[1]))
+        graph.ndata["feat"] = torch.tensor(adata_concat.X).float()
+        num_features = graph.ndata["feat"].shape[1]
+    else:
+        raise NotImplementedError
+    return graph, num_features, adata_concat
+
+
 def simple_impute(ad1, ad2, pi):
     ad1.X = ad1.X.toarray()
     ad2.X = ad2.X.toarray()
