@@ -537,7 +537,7 @@ def visualization_umap_spatial(ad_temp, section_ids, exp_fig_dir, dataset_name, 
     fig.savefig(os.path.join(exp_fig_dir, dataset_name+'_'.join(section_ids)+str(i)+identifier+".pdf"))
 
     """visualization"""
-    if dataset_name == "mHypothalamus":
+    if dataset_name == "MHypo":
         spot_size=25
         title_size = 12
     elif dataset_name == "DLPFC":
